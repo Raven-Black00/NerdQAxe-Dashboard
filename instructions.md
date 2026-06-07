@@ -1,296 +1,183 @@
-# RAVENMINER HQ — Instructions
-### ᚱᚨᚹᛖᚾ · The Keeper's Codex
+# ᚺ Instructions — The Rites of Awakening
+## *RavenMiner HQ v5.9.2.0 · Thurisaz*
 
-> *The longhouse does not run itself.*
-> *Read these runes before you light the forge.*
+> *"Before you call upon the All-Father's ravens, you must first prepare the altar."*
 
 ---
 
-## ᛟ Requirements — What the Forge Demands
+## ᛁ — Prerequisites
 
-Before the ravens fly, the forge must be fed.
+Before the dashboard can speak, these truths must be established:
 
-**Python 3.10 or higher** is required.
-Install all dependencies from the world tree:
+1. **Python 3.10 or higher** must be installed on your machine.
+   - Download: [python.org/downloads](https://www.python.org/downloads/)
+   - Verify: `python --version`
+
+2. **pip** must be available:
+   - Verify: `pip --version`
+
+3. **Your NerdQAxe+ miner** must be on your local network and accessible via its HTTP API.
+   - Find its IP via your router's DHCP table, or look at the miner's screen.
+   - Verify: open `http://<miner-ip>/api/system/info` in a browser — you should see JSON.
+
+4. **Windows 10/11** is recommended for full feature support (system tray, WAV startup sound, `winsound`).
+   - Linux/macOS: all core features work. Tray icon and startup sound are gracefully skipped.
+
+---
+
+## ᚢ — Installation
+
+### Step 1 — Clone the Repository
+
+```bash
+git clone https://github.com/Raven-Black00/NerdQAxe-Dashboard.git
+cd NerdQAxe-Dashboard
+```
+
+### Step 2 — Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If `tkinter` is missing on Linux, summon it thus:
+If you prefer a virtual environment (the prudent path):
 
 ```bash
-# Debian / Ubuntu
-sudo apt install python3-tk
+python -m venv venv
 
-# Fedora / RHEL
-sudo dnf install python3-tkinter
+# Windows:
+venv\Scripts\activate
+
+# Linux/macOS:
+source venv/bin/activate
+
+pip install -r requirements.txt
 ```
 
----
-
-## ᚠ First Run — Carving the First Rune
-
-Launch the longhouse from the project root:
+### Step 3 — Launch
 
 ```bash
-python Ravenminer_HQ_5_2_10.py
+python Ravenminer_HQ_5.9.2.0_Thurisaz.py
 ```
 
-On first invocation, a settings scroll will appear.
-Fill the sacred fields or the ravens fly blind.
+The dashboard will open maximised. You will hear the startup WAV if on Windows. The ravens greet you.
 
 ---
 
-## ᚨ Configuration — The Settings Scroll
+## ᚨ — First-Time Configuration
 
-Open the settings panel from the tray icon or the menu.
-The following runes must be carved:
+### Setting Your Miner IP
 
-| Rune | Field | Purpose |
-|---|---|---|
-| ᛗ | `minerip` | IP address of your mining rig |
-| ᚢ | `stratumUser` | Your miner's true name (burns gold on the ping row) |
-| ᚨ | `ntfy_topic` | ntfy push URL — e.g. `https://ntfy.sh/your-secret-topic` |
-| ᛏ | `pingavgwindow` | Rolling ping window in seconds (default: 60) |
-| ᚱ | `hrrefreshvar` | Hashrate graph refresh rate — floor is 0.10 seconds |
+1. Click the **⚙ Settings** button in the right panel.
+2. In the `Miner IP` field, enter your miner's IP address (e.g., `192.168.1.105`).
+3. Click **Apply** or press **Enter**.
+4. The dashboard will begin polling immediately.
 
-Settings are cached in memory and written to `ravenminer_alerts.json` on save.
-**Do not edit JSON files by hand** unless you speak the machine tongue.
+Settings are saved to `ravenminer.json` in the same directory as the script.
 
----
+### Configuring Miner Parameters (Optional)
 
-## 🔁 Reboot — The Slide-to-Confirm Guard
-
-The reboot control in Settings requires three deliberate steps to fire:
-
-1. **Enable the toggle switch** — the label turns RED reading `ON`
-2. **Slide the bar to 100** — the label reads `## %` as you drag
-3. **Hold at 100 for 2 seconds** — the label reads `HOLD — rebooting...`
-
-Releasing the slider before the 2-second hold expires cancels the reboot.
-The moment a reboot is confirmed, the dashboard immediately shows
-`CONNECTION LOST` — the forge does not pretend the miner is still breathing.
+The Settings panel also exposes:
+- **Stratum URL & Port** — your mining pool
+- **Stratum Username** — your wallet/worker string
+- **Core Frequency (MHz)** — overclocking target
+- **Fan Speed** — manual override (or enable Auto Fan)
+- **Target Temperature** — PID fan control target
+- **Screen flip/invert** — for physical miner display orientation
 
 ---
 
-## ⚡ ntfy.sh — The New War-Horn
+## ᚷ — Alerts & Webhooks (ntfy.sh)
 
-Discord has been replaced with **ntfy.sh** — a free, open-source push
-notification service. No account required. One HTTP POST, any phone on Earth.
+RavenMiner HQ can push alerts to your phone via [ntfy.sh](https://ntfy.sh).
 
-**To arm the war-horn:**
+### Setup
 
-1. Install the **ntfy** app on your phone — Android (Play Store / F-Droid) or iOS
-2. Choose a secret topic name — make it long and random:
-   `https://ntfy.sh/ravenminer-alan-x7q9mz3p`
-3. Open Settings in RavenMiner HQ → **NTFY.SH ALERTS**
-4. Paste the full URL into the **ntfy Topic URL** field
-5. Click **▶  TEST NOTIFY  (ntfy.sh)** — your phone should buzz within seconds
-6. Save settings
+1. Install the **ntfy** app on your phone (iOS or Android).
+2. Subscribe to a topic of your choosing (e.g., `raven-miner-alerts-alan`).
+3. In the **⚙ Settings** panel, enter your topic in the `ntfy Topic` field.
+4. Configure thresholds:
+   - **Alert Temp (°C)** — ASIC overheat threshold (default 85°C)
+   - **VR Alert Temp (°C)** — VR overheat threshold (default 85°C)
+   - **Hashrate Alert (TH/s)** — low hashrate threshold (default 0.5 TH/s)
+5. Click **Apply**. Alert config is saved to `ravenmineralerts.json`.
 
-> *Your topic name is your password on the public server.*
-> *For maximum privacy, self-host ntfy on your own machine — change the URL to*
-> *`http://192.168.x.x/your-topic` and nothing leaves your network.*
-
-**Alerts that will reach your phone:**
-
-| Alert | When | Priority |
-|---|---|---|
-| 🔥 MINER OVERHEAT | ASIC temp ≥ threshold | High |
-| 🟠 VR OVERHEAT | VR temp ≥ threshold | High |
-| ⚠️ MINER OFFLINE | 6 consecutive failed polls | High |
-| ⛏️ BLOCK FOUND | New block confirmed | High |
-| ❌ REJECTED SPIKE | ≥ 5 shares rejected | Default |
-| 📉 LOW HASHRATE | Hashrate < threshold | Default |
-| 🏆 NEW MILESTONE | Every 50M difficulty crossed | Default |
+### Alert Types
+- 🔥 ASIC overheat
+- 🟠 VR overheat
+- 📉 Low hashrate
+- 🏆 Block found
+- ⚠️ Rejected share spike
+- ✨ Best difficulty milestones (every 50M)
 
 ---
 
-## 📊 The Five Gauges — Left Column
+## ᛈ — Dashboard Controls
 
-The left column now displays five analogue arc gauges:
-
-| Gauge | Colour | Warn | Crit |
-|---|---|---|---|
-| ASIC TEMP | ORANGE | 55°C | 70°C |
-| VR TEMP | CYAN | 50°C | 65°C |
-| VOLTAGE | GREEN | 11.9 V | 11.5 V (lo: 10.0, hi: 13.5) |
-| CURRENT | ORANGE | 10.0 A | 12.0 A (lo: 0.0, hi: 15.0) |
-
-Each gauge needle turns RED when the critical threshold is crossed.
-
----
-
-## 🔄 Rolling Averages — The Avg Window
-
-The bottom bar has four configurable entries (right to left):
-
-| Entry | Colour | Controls |
-|---|---|---|
-| `Refresh s` | CYAN | Main API poll interval (floor 0.10 s) |
-| `Graph s` | GOLD | Hashrate bar graph redraw rate (floor 0.10 s) |
-| `Ping avg s` | TEAL | Ping rolling average window |
-| `Avg s` | ORANGE | CURRENT (A) + CORE VOLTAGE (mV) rolling average window |
-
-Type a new value and press `Return` or click away. Floors and ceilings
-are enforced — the field resets if you enter an illegal value.
+| Control | Action |
+|---|---|
+| **Right-click any gauge** | Opens floating history graph window |
+| **Refresh s** (bottom bar) | Sets the main poll interval (0.10–5.00s) |
+| **Graph s** (bottom bar) | Sets the hashrate bar graph refresh rate |
+| **Avg s** (bottom bar) | Sets the rolling-average window for voltage/current/core-volt |
+| **Ping avg s** (bottom bar) | Sets the ping rolling-average window |
+| **⚙ Settings** (right panel) | Opens full settings panel |
+| **💀 Reboot** (right panel) | Guarded reboot — enable toggle, slide to 100, hold 2s |
+| **`</>` Source** (right panel) | Opens built-in source code viewer with syntax highlight + search |
+| **Version label** (top right) | Clickable — opens this GitHub repository |
+| **Email label** (top centre) | Clickable — opens mailto link |
 
 ---
 
-## 📶 WiFi Signal — Reading the Ether
+## ᛏ — Building a Standalone EXE (Windows)
 
-The right column shows the miner's WiFi RSSI and SSID live:
+A build script is provided: `RavenMiner_BUILD_6.0.0.bat`
 
-| Colour | Threshold | Omen |
-|---|---|---|
-| 🟢 GREEN | > -60 dBm | Strong — the ether is clear |
-| 🟠 ORANGE | -60 to -75 dBm | Marginal — watch for drop-outs |
-| 🔴 RED | < -75 dBm | Weak — the signal frays |
+This uses **PyInstaller** to bundle the app into a single `.exe`:
 
-If RSSI shows `---`, your NerdQaxe firmware does not expose `wifiRSSI`.
-Update firmware or treat as informational.
+```bat
+RavenMiner_BUILD_6.0.0.bat
+```
 
----
+The resulting executable will be in the `dist/` folder.
 
-## 🌊 Ping Colours — Reading the Tide
-
-The rolling ping display speaks in colour:
-
-| Colour | Threshold | Omen |
-|---|---|---|
-| 🟢 GREEN | below 50 ms | Swift as Sleipnir — all is well |
-| 🟠 ORANGE | below 120 ms | Bifrost at dusk — watch the horizon |
-| 🔴 RED | 120 ms+ | Ragnarök approaches — check your network |
-
-Ping is TCP-born, non-blocking, daemon-threaded.
-`pinginflight` stands guard — threads do not pile like corpses.
-
----
-
-## 🔵 Best-Diff Pulse — The Breathing Counter
-
-The Best-Diff value breathes in **blue** (`#00aaff`) when no new record
-is being set — a slow sine-phase animation driven by `bddiffpulse()`.
-
-When a **new personal best** is registered:
-- A fast **red bounce** fires for a short window
-- The bounce expires (`bdreduntil` epoch) and the label returns to blue breathe
-- Two gold **flanking runes** cycle through the Elder Futhark, left and right,
-  never in sync
-
----
-
-## ᛒ The Tray Daemon — The Unseen Watcher
-
-RavenMiner HQ lives in your system tray when minimised.
-Right-click the tray icon to:
-
-- **Show** — summon the longhouse to the foreground
-- **⚡ NEW DIFFICULTY** — appears when `bestSessionDiff` surpasses 50M
-- **Quit** — extinguish the forge
-
-> *The unseen watcher never sleeps.*
-
----
-
-## 📜 Source Code Viewer
-
-The in-app source viewer opens the running `.py` file in a syntax-highlighted
-scrollable window. Features:
-
-- **Keywords** — lavender `#cc99ff`
-- **Strings** — green `#a8ff78`
-- **Comments** — italic grey `#555577`
-- **Numbers** — gold `#ffcc44`
-- **`def` / `class`** — GOLDBRIGHT bold
-
-The viewer is read-only. Horizontal and vertical scrollbars included.
-Line count shown in the footer.
-
----
-
-## ᛜ Troubleshooting — When Hail Falls
-
-**ntfy test alert sent but phone does not buzz**
-→ Confirm the ntfy app is installed and subscribed to your exact topic name.
-  The topic name is case-sensitive. Check for trailing spaces in the URL field.
-
-**Voltage / Current gauges show 0 or ---**
-→ Your NerdQaxe firmware may not expose `coreVoltageActual` / `currentA`.
-  Update to the latest NerdQaxe++ firmware.
-
-**WiFi RSSI shows --- dBm**
-→ Firmware does not expose `wifiRSSI`. Ignore or update firmware.
-
-**Reboot slider won't fire**
-→ You must (1) enable the toggle, (2) slide to 100, AND (3) hold for 2 seconds.
-  Releasing early cancels. This is intentional.
-
-**Dashboard still shows LIVE after reboot command**
-→ Fixed in v5.2.9. Update to current version if still occurring.
-
-**ntfy alert error: codec can't encode character**
-→ Fixed in v5.2.0. Emoji are now carried by the `Tags` field, not the header.
-
-**`[RavenMiner] ignored error: lbl_refresh_stat` spam in console**
-→ Fixed in v5.2.1. Update to current version.
-
-**The miner IP is not found after settings change**
-→ The IP fallback rune `self.cfg.get("minerip", MINERIP)` holds the last known
-  address. Save settings again to re-anchor.
-
-**Hashrate graph refresh is too fast / erratic**
-→ The floor is `0.10` seconds. Do not set below this.
-
----
-
-## ᛞ Packaging — For the Uninitiated
-
-To forge a standalone executable for those who do not speak Python:
-
+Requires PyInstaller:
 ```bash
 pip install pyinstaller
-pyinstaller --onefile --windowed --icon=assets/huginn.ico Ravenminer_HQ_5_2_10.py
-```
-
-The compiled relic will appear in `dist/`.
-Carry it to any Windows machine without Python installed.
-
----
-
-## ᚷ File Structure — The Bones of the Longhouse
-
-```
-RavenAxe-BTCMiner-HQ/
-├── Ravenminer_HQ_5_2_10.py  ← The forge itself
-├── ravenminer_config.json    ← The sacred scroll (auto-generated)
-├── ravenminer_alerts.json    ← Alert thresholds & ntfy topic (auto-generated)
-├── requirements.txt          ← The dependencies of Yggdrasil
-├── CHANGELOG.md              ← Every rune carved since the beginning
-├── Release-Notes.md          ← The chronicle of this release
-├── instructions.md           ← This very codex
-└── assets/
-    ├── huginn.ico             ← Thought, watching from the tray
-    └── vegvisir.png           ← The wayfinding sigil
 ```
 
 ---
 
-```
-    M       M
-   /H\     /M\
-  / U \   / U \
- / G   \ /  N  \
-/ I     I    I  \
-        N        N
-/_____RAVENMINER HQ_____\
-  ᚠᛖᚺᚢ  ᛏᛁᚹᚨᛉ  ᛟᛞᛁᚾᚾ
-```
+## ᛒ — Troubleshooting
 
-*May your difficulty be low.*
-*May your uptime be eternal.*
-*The ravens watch. The Allfather approves.*
+**Dashboard shows `CONNECTION LOST` / all values `--`**
+- Verify miner IP in Settings
+- Confirm miner is powered on and reachable: `ping <miner-ip>`
+- Check your miner's API is responding: `curl http://<miner-ip>/api/system/info`
 
-**R A V E N M I N E R H Q**
-ᚠ ᚢ ᚨ ᚱ ᚲ ᚷ ᚹ — ᛏ ᛒ ᛗ — ᛜ ᛞ ᛟ
+**No startup sound**
+- `winsound` is Windows-only; this is expected on Linux/macOS
+
+**Tray icon missing**
+- `pystray` and `Pillow` must both be installed. On Linux, a system tray host may be required.
+
+**Icons appear blank / Vegvísir missing**
+- Ensure `Pillow` is installed: `pip install Pillow`
+
+**High CPU usage**
+- Raise the **Refresh s** value in the bottom bar to 1.0–2.0 seconds
+
+---
+
+## ᛟ — Config File Locations
+
+| File | Purpose |
+|---|---|
+| `ravenminer.json` | Miner IP, pool, frequency, fan settings |
+| `ravenmineralerts.json` | ntfy topic, alert thresholds |
+
+Both files are created automatically on first launch / first save. They live next to the `.py` file (or next to the `.exe` if compiled).
+
+---
+
+*May Huginn carry your questions and Muninn return with answers.*
