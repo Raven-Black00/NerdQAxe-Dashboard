@@ -1,28 +1,15 @@
-# ============================================================
-# RAVENMINER HQ — requirements.txt
-# ᛟ OTHALA · The dependencies that hold the longhouse together
-# v5.2.1
-# ============================================================
+# ᛈ RavenMiner HQ — Requirements
+# v5.9.2.0 · Thurisaz
+# These are the provisions. Install them before the journey begins.
+#
+# pip install -r requirements.txt
 
-# --- HTTP / API ---
-# CoinGecko BTC price feed & ntfy.sh push notification war-horn
-# (ntfy uses plain HTTP POST — no additional library needed)
-requests>=2.31.0
+# HTTP communication with NerdQAxe+ REST API and CoinGecko BTC price feed
+requests>=2.28.0
 
-# --- GUI ---
-# tkinter is bundled with CPython — no pip install needed.
-# If your distro ships Python without it:
-#   Ubuntu/Debian: sudo apt install python3-tk
-#   Fedora:        sudo dnf install python3-tkinter
+# Image handling: Valknut animation, Vegvisir watermark, raven heads, icon, tray icon
+Pillow>=9.0.0
 
-# --- Graphing (hashrate / ping history) ---
-matplotlib>=3.8.0
-
-# --- System Tray Daemon ---
-pystray>=0.19.5
-
-# --- Image handling (tray icon, Vegvisir watermark) ---
-Pillow>=10.3.0
-
-# --- Optional: packaging as a standalone executable ---
-# pyinstaller>=6.6.0
+# System tray icon and Windows balloon notifications
+# Gracefully absent on unsupported platforms — all core features remain functional
+pystray>=0.19.0
